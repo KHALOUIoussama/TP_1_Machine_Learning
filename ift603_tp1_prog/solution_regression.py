@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 
 #####
-# VosNoms (Matricule) .~= À MODIFIER =~.
+# Khaloui Oussama (23130746) .
+# AJOUTEZ VOS NOMS ET MATRICULES ICI
+# ~= À MODIFIER =~.
 ###
 
-import numpy as np
 import random
+
+import numpy as np
 from sklearn import linear_model
 
 
@@ -15,16 +18,20 @@ class Regression:
         self.w = None
         self.M = m
 
-    def fonction_base_polynomiale(self, x):
+    def fonction_base_polynomiale(M, x):
         """
         Fonction de base qui projette la donnee x vers un espace polynomial tel que mentionne au chapitre 3.
-        Si x est un scalaire, alors phi_x sera un vecteur à self.M dimensions : (x^1,x^2,...,x^self.M)
+        Si x est un scalaire, alors phi_x sera un vecteur à  M dimensions : (x^1,x^2,...,x^ M)
         Si x est un vecteur de N scalaires, alors phi_x sera un tableau 2D de taille NxM
 
         NOTE : En mettant phi_x = x, on a une fonction de base lineaire qui fonctionne pour une regression lineaire
         """
-        # AJOUTER CODE ICI
-        phi_x = x
+        # Vérifier si x est un scalaire ou un vecteur
+        if np.isscalar(x):
+            phi_x = np.array([x**i for i in range(1, M+1)])
+        else:
+            phi_x = np.vander(x, M, increasing=True)
+
         return phi_x
 
     def recherche_hyperparametre(self, X, t):
