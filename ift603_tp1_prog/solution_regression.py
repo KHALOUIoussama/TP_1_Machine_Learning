@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
 
 #####
-# Khaloui Oussama (23130746) .
-# AJOUTEZ VOS NOMS ET MATRICULES ICI
-# ~= À MODIFIER =~.
+# VosNoms (Matricule) .~= À MODIFIER =~.
 ###
-
-import random
 
 import numpy as np
 from sklearn import linear_model
@@ -18,20 +14,18 @@ class Regression:
         self.w = None
         self.M = m
 
-    def fonction_base_polynomiale(M, x):
+    def fonction_base_polynomiale(self, x):
         """
         Fonction de base qui projette la donnee x vers un espace polynomial tel que mentionne au chapitre 3.
-        Si x est un scalaire, alors phi_x sera un vecteur à  M dimensions : (x^1,x^2,...,x^ M)
+        Si x est un scalaire, alors phi_x sera un vecteur à self.M dimensions : (x^1,x^2,...,x^self.M)
         Si x est un vecteur de N scalaires, alors phi_x sera un tableau 2D de taille NxM
 
         NOTE : En mettant phi_x = x, on a une fonction de base lineaire qui fonctionne pour une regression lineaire
         """
-        # Vérifier si x est un scalaire ou un vecteur
-        if np.isscalar(x):
-            phi_x = np.array([x**i for i in range(1, M+1)])
+        if isinstance(x, (int, float)):
+            phi_x = np.array([x ** i for i in range(1, self.M + 1)])
         else:
-            phi_x = np.vander(x, M, increasing=True)
-
+            phi_x = np.array([[x_i ** j for j in range(1, self.M + 1)] for x_i in x])
         return phi_x
 
     def recherche_hyperparametre(self, X, t):
@@ -55,7 +49,40 @@ class Regression:
         t: vecteur de cibles
         """
         # AJOUTER CODE ICI
-        self.M = 1
+        
+        k = min(10, len(X))  # Nombre de folds (au maximum 10)
+        indices = np.arange(len(X))
+        np.random.shuffle(indices)
+        folds = np.array_split(indices, k)
+
+        best_m = 1
+        best_error = float('inf')
+
+        for m in range(1, 11):  # Recherche sur les valeurs de M de 1 à 10
+            total_error = 0.0
+            for i, valid_indices in enumerate(folds):
+                train_indices = np.concatenate([fold for j, fold in enumerate(folds) if j != i])
+                X_train, t_train = X[train_indices], t[train_indices]
+                X_valid, t_valid = X[valid_indices], t[valid_indices]
+
+                # Entraînement du modèle
+                self.M = m
+                self.entrainement(X_train, t_train)
+
+                # Prédiction sur l'ensemble de validation
+                predictions = self.prediction(X_valid)
+
+                # Calcul de l'erreur
+                error = self.erreur(t_valid, predictions)
+                total_error += error
+
+            avg_error = total_error / k
+            if avg_error < best_error:
+                best_error = avg_error
+                best_m = m
+
+        self.M = best_m  # Meilleur M trouvé
+
 
     def entrainement(self, X, t, using_sklearn=False):
         """
@@ -84,12 +111,23 @@ class Regression:
 
         """
         #AJOUTER CODE ICI
+        phi_x = self.fonction_base_polynomiale(X)
+
         if self.M <= 0:
             self.recherche_hyperparametre(X, t)
 
-        phi_x = self.fonction_base_polynomiale(X)
-        self.w = [0, 1]
+        if using_sklearn:
+            # Utilisation de la régression Ridge de sklearn ou de la régression linéaire standard
+            regressor = linear_model.Ridge(alpha=self.lamb, fit_intercept=False) if self.lamb > 0 else linear_model.LinearRegression(fit_intercept=False)
+            regressor.fit(phi_x, t)
+            self.w = regressor.coef_
+        else:
+            # Utilisation de la résolution de système d'équations linéaires
+            A = np.dot(phi_x.T, phi_x) + self.lamb * np.identity(self.M)
+            b = np.dot(phi_x.T, t)
+            self.w = np.linalg.solve(A, b)
 
+        
     def prediction(self, x):
         """
         Retourne la prediction de la regression lineaire
@@ -100,7 +138,8 @@ class Regression:
         afin de calculer la prediction y(x,w) (equation 3.1 et 3.3).
         """
         # AJOUTER CODE ICI
-        return 0.5
+        phi_x = self.fonction_base_polynomiale(x)
+        return np.dot(phi_x, self.w)
 
     @staticmethod
     def erreur(t, prediction):
@@ -109,4 +148,4 @@ class Regression:
         la cible ``t`` et la prediction ``prediction``.
         """
         # AJOUTER CODE ICI
-        return 0.0
+        return np.mean((t - prediction) ** 2)
