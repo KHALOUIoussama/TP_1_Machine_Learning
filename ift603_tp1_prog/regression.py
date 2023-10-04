@@ -1,11 +1,11 @@
-# -*- coding: utf-8 -*-
-
+from logging import WARNING
 import numpy as np
 import sys
 import solution_regression as sr
 import gestion_donnees as gd
 import matplotlib.pyplot as plt
-
+import tkinter
+from tkinter import messagebox
 
 def warning(erreur_test, erreur_apprentissage, bruit):
     """
@@ -16,9 +16,17 @@ def warning(erreur_test, erreur_apprentissage, bruit):
     erreur_apprentissage: erreur obtenue sur l'ensemble d'apprentissage
     bruit: magnitude du bruit
     """
-    # AJOUTER CODE ICI
-    # Écrivez des conditions simples, avec des valeurs approximatives "harcodées",
-    # qui vérifient si nous sommes en présence de sur- ou sous-apprentissage.
+    window = tkinter.Tk()
+    window.wm_withdraw()
+    window.geometry("1x1+200+200")
+    
+    if erreur_apprentissage > bruit:
+        messagebox.showwarning(title="WARNING", message="SOUS-APPRENTISSAGE", parent=window)
+       
+    elif erreur_test > bruit:
+        messagebox.showwarning(title="WARNING", message="SUR-APPRENTISSAGE", parent=window)
+
+    window.destroy()
 
 ################################
 # Execution en tant que script 
@@ -27,7 +35,6 @@ def warning(erreur_test, erreur_apprentissage, bruit):
 #
 # dans un terminal
 ################################
-
 
 def main():
     
@@ -57,8 +64,8 @@ def main():
     [x_train, t_train, x_test, t_test] = gestionnaire_donnees.generer_donnees()
 
     # Entrainement du modele de regression
-    regression = sr.Regression(lamb, m)
-    regression.entrainement(x_train, t_train, using_sklearn=skl)
+    regression = sr.Regression(lamb, m, skl)
+    regression.entrainement(x_train, t_train)
 
     # Predictions sur les ensembles d'entrainement et de test
     predictions_train = np.array([regression.prediction(x) for x in x_train])
@@ -81,10 +88,12 @@ def main():
     predictions_range = np.array([regression.prediction(x) for x in np.arange(0, 1, 0.01)])
     gestionnaire_donnees.afficher_donnees_et_modele(np.arange(0, 1, 0.01), predictions_range, False)
 
-    if m >= 0:
+    if m > 0:
         plt.suptitle('Resultat SANS recherche d\'hyperparametres')
     else:
         plt.suptitle('Resultat AVEC recherche d\'hyperparametres')
+
+    plt.legend()
     plt.show()
 
 if __name__ == "__main__":
