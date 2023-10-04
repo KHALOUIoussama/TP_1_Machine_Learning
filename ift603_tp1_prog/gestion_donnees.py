@@ -15,6 +15,7 @@ class GestionDonnees:
         self.nb_train = nb_train
         self.nb_test = nb_test
         self.bruit = bruit
+        self.plotCalled = False
 
     def generer_donnees(self):
         """
@@ -58,11 +59,14 @@ class GestionDonnees:
             t_mod = np.tanh((x_mod - 0.5) * self.w[1] * 2)
 
         if scatter is True:
-            plt.scatter(x, t)
+            plt.scatter(x, t, label="Données bruitées")
         else:
             idx = np.argsort(x)
-            plt.plot(x[idx], t[idx], 'g')
+            plt.plot(x[idx], t[idx], 'g', label="Estimation")
 
-        plt.plot(x_mod, t_mod, 'k')
+        if not self.plotCalled:
+            plt.plot(x_mod, t_mod, 'k', label="Données non-bruitées")
+            self.plotCalled = True
+            
         plt.ylim(ymin=-1.5, ymax=4.5)
 
