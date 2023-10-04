@@ -43,7 +43,7 @@ def main():
         print(" exemple: python3 regression.py 1 sin 20 20 0.3 10 0.001\n")
         return
     
-    skl = int(sys.argv[1]) > 0.5
+    skl = int(sys.argv[1]) > 0.5 # True si on utilise sklearn
     modele_gen = sys.argv[2]
     nb_train = int(sys.argv[3])
     nb_test = int(sys.argv[4])

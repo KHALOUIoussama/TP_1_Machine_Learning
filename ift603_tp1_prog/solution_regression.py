@@ -26,11 +26,7 @@ class Regression:
 
         NOTE : En mettant phi_x = x, on a une fonction de base lineaire qui fonctionne pour une regression lineaire
         """
-        # Vérifier si x est un scalaire ou un vecteur
-        if np.isscalar(x):
-            phi_x = np.array([x**i for i in range(1, M+1)])
-        else:
-            phi_x = np.vander(x, M, increasing=True)
+        phi_x = x
 
         return phi_x
 

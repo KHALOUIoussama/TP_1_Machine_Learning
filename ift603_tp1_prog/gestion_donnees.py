@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #####
-# VotreNom (VotreMatricule) .~= À MODIFIER =~.
+# Khaloui Oussama (23130746) .~= À MODIFIER =~.
 ###
 
 import numpy as np
@@ -23,11 +23,11 @@ class GestionDonnees:
         modele_gen : 'lineaire', 'sin' ou 'tanh'
         nb_train : nb de donnees d'entrainement
         nb_test : nb de donnees de test
-        bruit : amplitude du bruit (superieur ou egale a zero
+        bruit : amplitude du bruit (superieur ou egale a zero)
         """
-        np.random.seed(self.nb_train)
-        x_train = np.random.rand(self.nb_train)
-        x_test = np.random.rand(self.nb_test)
+        np.random.seed(self.nb_train) # Pour avoir les memes donnees a chaque fois qu'on execute le code
+        x_train = np.random.rand(self.nb_train) # Vecteur de donnees d'entrainement (nb_train valeurs) tirees entre 0 et 1
+        x_test = np.random.rand(self.nb_test) # Vecteur de donnees de test (nb_test valeurs) tirees entre 0 et 1
         if self.modele_gen == 'lineaire':
             t_train = self.w[0] + x_train * self.w[1] + np.random.randn(self.nb_train) * self.bruit
             t_test = self.w[0] + x_test * self.w[1] + np.random.randn(self.nb_test) * self.bruit
