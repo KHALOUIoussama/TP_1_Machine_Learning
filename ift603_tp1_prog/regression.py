@@ -16,9 +16,21 @@ def warning(erreur_test, erreur_apprentissage, bruit):
     erreur_apprentissage: erreur obtenue sur l'ensemble d'apprentissage
     bruit: magnitude du bruit
     """
-    # AJOUTER CODE ICI
-    # Écrivez des conditions simples, avec des valeurs approximatives "harcodées",
-    # qui vérifient si nous sommes en présence de sur- ou sous-apprentissage.
+    # Seuil de tolérance pour déterminer si l'erreur est "significativement" plus élevée
+    seuil_tolerance = 0.2 + bruit  # on peut ajuster cette valeur
+    
+    # Si l'erreur d'apprentissage est faible, mais l'erreur de test est significativement plus élevée
+    if erreur_apprentissage < seuil_tolerance and (erreur_test - erreur_apprentissage) > seuil_tolerance:
+        print("WARNING: Risque de sur-apprentissage détecté!")
+    
+    # Si les deux erreurs sont élevées
+    elif erreur_apprentissage > seuil_tolerance and erreur_test > seuil_tolerance:
+        print("WARNING: Risque de sous-apprentissage détecté!")
+    
+    # Dans tous les autres cas, le modèle est probablement correct.
+    else:
+        print("Le modèle semble bien adapté aux données.")
+
 
 ################################
 # Execution en tant que script 
@@ -81,11 +93,39 @@ def main():
     predictions_range = np.array([regression.prediction(x) for x in np.arange(0, 1, 0.01)])
     gestionnaire_donnees.afficher_donnees_et_modele(np.arange(0, 1, 0.01), predictions_range, False)
 
-    if m >= 0:
+    if skl:
+        plt.text(0, 4, 'Resultat AVEC sklearn', bbox={'facecolor': 'green', 'alpha': 0.5, 'pad': 10})
+    else:
+        plt.text(0, 4, 'Resultat SANS sklearn', bbox={'facecolor': 'yellow', 'alpha': 0.5, 'pad': 10})
+
+    if m > 0:
         plt.suptitle('Resultat SANS recherche d\'hyperparametres')
+        plt.text(0, 3, f'M choisi = {m}', style='italic', bbox={'facecolor': 'red', 'alpha': 0.5, 'pad': 10})
     else:
         plt.suptitle('Resultat AVEC recherche d\'hyperparametres')
+        plt.text(0, 3, f'M calculé= {regression.M}', style='italic', bbox={'facecolor': 'red', 'alpha': 0.5, 'pad': 10})
+
+    # Créer un espace supplémentaire sur la droite du graphique pour afficher les informations
+    plt.subplots_adjust(right=0.7)  # Ajustez cette valeur en fonction de la longueur de vos informations
+
+    # Ajoutez vos tracés comme d'habitude ici
+
+    # Annotations pour les informations
+    infos = [
+        f"Modele gen: {modele_gen}",
+        f"Nb train  : {nb_train}",
+        f"Nb test   : {nb_test}",
+        f"Bruit     : {bruit}",
+        f"lambda    : {lamb}",
+    ]
+
+    # Positionnement et affichage des informations
+    for idx, info in enumerate(infos):
+        plt.annotate(info, xy=(1.05, 1 - idx * 0.08), xycoords='axes fraction', fontsize=9, ha="left")
+
+    # Affiche le graphique
     plt.show()
+
 
 if __name__ == "__main__":
     main()
