@@ -1,5 +1,7 @@
-# -*- coding: utf-8 -*-
 
+""" 
+Lien du git : https://github.com/KHALOUIoussama/TP_1_Machine_Learning/tree/master/ift603_tp1_prog
+ """
 #####
 # Khaloui Oussama (23130746)
 # Assabar Taoufik (Asst1001)
