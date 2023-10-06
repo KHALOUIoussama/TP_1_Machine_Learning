@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 #####
-# Khaloui Oussama (23130746) .~= À MODIFIER =~.
+# Khaloui Oussama (23130746)
+# Assabar Taoufik (Asst1001)
+# Bellari Nada (beln1812)
 ###
 
 import numpy as np
