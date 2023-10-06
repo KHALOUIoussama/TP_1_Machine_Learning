@@ -67,7 +67,7 @@ class Regression:
         X_folds = np.array_split(X, k)
         t_folds = np.array_split(t, k)
 
-        M_values = range(1, 11)  # Par exemple, tester M de 1 à 10
+        M_values = range(1, 41)  # Par exemple, tester M de 1 à 40
         mean_errors = []
 
         for M in M_values:
@@ -168,7 +168,6 @@ class Regression:
             # Utilisation de Ridge regression de sklearn
             
             ridge = Ridge(alpha=self.lamb, fit_intercept=False)
-            #ridge = Ridge(alpha=self.lamb, fit_intercept=True)
             
             ridge.fit(phi_x, t)
             self.w = ridge.coef_
